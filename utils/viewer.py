@@ -100,11 +100,11 @@ class Viewer():
 
         json_output = []
         parts = [
-            'NOSE', 'L_EYE', 'R_EYE', 'L_EAR', 'R_EAR', 'L_ELBOW', 'R_ELBOW',
-            'L_WRIST', 'R_WRIST', 'L_HIP', 'R_HIP', 'L_KNEE', 'R_KNEE',
-            'L_ANKLE', 'R_ANKLE'
+            'NOSE', 'L_EYE', 'R_EYE', 'L_EAR', 'R_EAR', 'L_SHOULDER',
+            'R_SHOULDER', 'L_ELBOW', 'R_ELBOW', 'L_WRIST', 'R_WRIST',
+            'L_HIP', 'R_HIP', 'L_KNEE', 'R_KNEE', 'L_ANKLE', 'R_ANKLE'
         ]
-
+        print(kps.shape[0])
         for i in range(kps.shape[0]):
             if kps[i, 2]:
                 part = {
