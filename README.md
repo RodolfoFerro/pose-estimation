@@ -94,5 +94,54 @@ If you want to change the parameters of the viewer, the model used, etc., you ca
 The generated output file is modified in real time. An example of the generated output is the following:
 
 ```json
-
+[
+    {
+        "ID": 0,
+        "part": "NOSE",
+        "x": 143,
+        "y": 155
+    },
+    {
+        "ID": 1,
+        "part": "L_EYE",
+        "x": 164,
+        "y": 138
+    },
+    {
+        "ID": 2,
+        "part": "R_EYE",
+        "x": 126,
+        "y": 136
+    },
+    {
+        "ID": 3,
+        "part": "L_EAR",
+        "x": 187,
+        "y": 152
+    },
+    {
+        "ID": 4,
+        "part": "R_EAR",
+        "x": 102,
+        "y": 147
+    },
+    {
+        "ID": 6,
+        "part": "R_ELBOW",
+        "x": 58,
+        "y": 251
+    },
+    {
+        "ID": 9,
+        "part": "L_HIP",
+        "x": 156,
+        "y": 221
+    },
+    {
+        "ID": 10,
+        "part": "R_HIP",
+        "x": 152,
+        "y": 219
+    }
+]
 ```
