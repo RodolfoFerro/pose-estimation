@@ -170,13 +170,15 @@ class Viewer():
         while True:
             # Capture frame-by-frame:
             ret, frame = self.capture.read()
+            fh, fw = frame.shape[:2]
+            delta = (fw - fh) // 2
 
             # Extract input details from loaded model
             input_shape = self.input_details[0]['shape']
             height, width = input_shape[1], input_shape[2]
 
             # Prepare input image
-            in_img = cv2.resize(frame[:, 280:-280], (width, height))
+            in_img = cv2.resize(frame[:, delta:-delta], (width, height))
             in_img = np.expand_dims(in_img, axis=0)
 
             float_model = self.input_details[0]['dtype'] == np.float32
