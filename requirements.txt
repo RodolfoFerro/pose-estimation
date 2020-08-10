@@ -2,10 +2,6 @@ numpy
 scipy==1.4.1
 flask
 matplotlib
-plotly
 pandas
-scikit-learn
 opencv-python
 tensorflow
-ipython
-jupyterlab
