@@ -1,4 +1,5 @@
 from time import time
+import json
 
 import numpy as np
 import cv2
@@ -6,7 +7,7 @@ import cv2
 
 class Viewer():
 
-    def __init__(self, model, video_capture, viewer_specs):
+    def __init__(self, model, video_capture, viewer_specs, output_file=None):
         """Loads model, video capture and viewer.
 
         Sets interpreter and viewer specifications.
@@ -38,6 +39,8 @@ class Viewer():
             if 'LINK_COLOR' in specs else (255, 255, 0)
         self.thickness = viewer_specs['THICKNESS'] \
             if 'THICKNESS' in specs else 1
+        
+        self.output_file = output_file
 
 
     @staticmethod
@@ -89,7 +92,36 @@ class Viewer():
         return pose_kps
 
 
-    def draw_kps(self, show_img, kps, ratio=None):
+    def _serialize_output(self, kps):
+        """Serializes output.
+
+        Writes output keypoints into a JSON file.
+        """
+
+        json_output = []
+        parts = [
+            'NOSE', 'L_EYE', 'R_EYE', 'L_EAR', 'R_EAR', 'L_ELBOW', 'R_ELBOW',
+            'L_WRIST', 'R_WRIST', 'L_HIP', 'R_HIP', 'L_KNEE', 'R_KNEE',
+            'L_ANKLE', 'R_ANKLE'
+        ]
+
+        for i in range(kps.shape[0]):
+            if kps[i, 2]:
+                part = {
+                    'ID': i,
+                    'part': parts[i],
+                    'x': int(kps[i, 1]),
+                    'y': int(kps[i, 0])
+                }
+                json_output.append(part)
+        
+        output = json.dumps(json_output, indent=4)
+
+        with open(self.output_file, 'w') as f:
+            f.write(output)
+
+
+    def _draw_kps(self, show_img, kps, ratio=None):
         """Processes all keypoints and plots them in output image.
 
         Parameters
@@ -111,18 +143,18 @@ class Viewer():
             if kps[i, 2]:
                 if isinstance(ratio, tuple):
                     p_X = int(round(kps[i, 1] * ratio[1]))
-                    p_Y = int(round(kps[i,0]*ratio[0]))
+                    p_Y = int(round(kps[i, 0] * ratio[0]))
                     cv2.circle(
                         show_img,
                         (p_X, p_Y),
                         self.thickness,
                         self.point_color,
-                        round(int(1*ratio[1]))
+                        round(int(1 * ratio[1]))
                     )
                     continue
                 cv2.circle(
                     show_img,
-                    (kps[i,1],kps[i,0]),
+                    (kps[i, 1], kps[i, 0]),
                     self.thickness,
                     self.point_color,
                     self.thickness
@@ -177,7 +209,11 @@ class Viewer():
             # Process and draw output
             out_img = np.squeeze((in_img.copy() * 127.5 + 127.5) / 255.)
             out_img = np.array(out_img * 255, np.uint8)
-            out_img = self.draw_kps(out_img, kps)
+            out_img = self._draw_kps(out_img, kps)
+
+            # Writes output file
+            if self.output_file:
+                self._serialize_output(kps)
 
             # End time count
             end_prediction = time()

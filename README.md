@@ -5,25 +5,25 @@ This repository contains a trained version of PoseNet that runs directly with Te
 
 The trained model returns a set of `(x, y)` paired keypoints containing the ouput of inference. All keypoints are indexed by an ID. You can see the IDs and parts in the following table:
 
-| ID | PART           |
-| -- | -------------- |
-|  0 | Nose           |
-|  1 | Left eye       |
-|  2 | Right eye      |
-|  3 | Left ear       |
-|  4 | Right ear      |
-|  5 | Left shoulder  |
-|  6 | Right shoulder |
-|  7 | Left elbow     |
-|  8 | Right elbow    |
-|  9 | Left wrist     |
-| 10 | Right wrist    |
-| 11 | Left hip       |
-| 12 | Right hip      |
-| 13 | Left knee      |
-| 14 | Right knee     |
-| 15 | Left ankle     |
-| 16 | Right ankle    |
+| ID | PART       |
+| -- | ---------- |
+|  0 | NOSE       |
+|  1 | L_EYE      |
+|  2 | R_EYE      |
+|  3 | L_EAR      |
+|  4 | R_EAR      |
+|  5 | L_SHOULDER |
+|  6 | R_SHOULDER |
+|  7 | L_ELBOW    |
+|  8 | R_ELBOW    |
+|  9 | L_WRIST    |
+| 10 | R_WRIST    |
+| 11 | L_HIP      |
+| 12 | R_HIP      |
+| 13 | L_KNEE     |
+| 14 | R_KNEE     |
+| 15 | L_ANKLE    |
+| 16 | R_ANKLE    |
 
 
 ## Prerequisities

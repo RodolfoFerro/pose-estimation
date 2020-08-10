@@ -1,6 +1,9 @@
+# Extra
+utils/__pycache__/
+out.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
-utils/__pycache__/
 *.py[cod]
 *$py.class
 

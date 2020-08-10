@@ -20,11 +20,9 @@ OUT_FILE = 'out.json'
 # Initialize videocapture
 CAPTURE = cv2.VideoCapture(0)
 
-
 # Creates model instance
 model = ModelLoader(MODEL_PATH)
 
-
 # Creates viewer instance and runs capture
-viewer = Viewer(model, CAPTURE, VIEWER_SPECS)
+viewer = Viewer(model, CAPTURE, VIEWER_SPECS, OUT_FILE)
 viewer.run()
