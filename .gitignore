@@ -1,6 +1,6 @@
 # Extra
 utils/__pycache__/
-out.json
+out*.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

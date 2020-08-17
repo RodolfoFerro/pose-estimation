@@ -1,7 +1,4 @@
-numpy
+psutil
 scipy==1.4.1
-flask
-matplotlib
-pandas
 opencv-python
 tensorflow
