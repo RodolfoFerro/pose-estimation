@@ -33,18 +33,21 @@ class Viewer():
 
         self.window = viewer_specs['WINDOW_NAME'] \
             if 'WINDOW_NAME' in specs else 'CAPTURE'
+        self.mirror = viewer_specs['MIRROR_IMAGE'] \
+            if 'MIRROR_IMAGE' in specs else False,
         self.point_color = viewer_specs['POINT_COLOR'] \
             if 'POINT_COLOR' in specs else (255, 0, 0)
         self.link_color = viewer_specs['LINK_COLOR'] \
             if 'LINK_COLOR' in specs else (255, 255, 0)
         self.thickness = viewer_specs['THICKNESS'] \
             if 'THICKNESS' in specs else 1
+        self.threshold = viewer_specs['THRESHOLD'] \
+            if 'THRESHOLD' in specs else 0.7
         
         self.output_file = output_file
 
 
-    @staticmethod
-    def parse_output(heatmap_data, offset_data, threshold=0.7):
+    def _parse_output(self, heatmap_data, offset_data):
         '''Parses output from inference.
 
         Parameters
@@ -55,9 +58,6 @@ class Viewer():
         offset_data : ndarray (3-dimensional)
             The offset vectors for an image. These vectors are obtained
             from inference.
-        threshold : float
-            The probability threshold for the keypoints inference. By
-            default it is set to 0.7.
 
         Returns
         -------
@@ -74,7 +74,7 @@ class Viewer():
             joint_heatmap = heatmap_data[..., i]
             max_coincidences = joint_heatmap == np.max(joint_heatmap)
             max_val_pos = np.squeeze(np.argwhere(max_coincidences))
-            remap_pos = np.array(max_val_pos / 8 * 257, dtype=np.int32)
+            remap_pos = np.array(max_val_pos / 8 * 257, dtype=np.float64)
 
             # Compute (x, y) positions
             x, y = remap_pos[0], remap_pos[1]
@@ -85,7 +85,7 @@ class Viewer():
             max_prob = np.max(joint_heatmap)
 
             # Assign values or non-prob flag
-            if max_prob > threshold:
+            if max_prob > self.threshold:
                 if pose_kps[i,0] < 257 and pose_kps[i,1] < 257:
                     pose_kps[i,2] = 1
 
@@ -177,6 +177,9 @@ class Viewer():
             height, width = input_shape[1], input_shape[2]
 
             # Prepare input image
+            if self.mirror:
+                frame = cv2.flip(frame, 1)
+
             in_img = cv2.resize(frame[:, delta:-delta], (width, height))
             in_img = np.expand_dims(in_img, axis=0)
 
@@ -205,7 +208,7 @@ class Viewer():
             # Parse output
             heatmaps = np.squeeze(output_data)
             offsets = np.squeeze(offset_data)
-            kps = self.parse_output(heatmaps, offsets)
+            kps = self._parse_output(heatmaps, offsets)
 
             # Process and draw output
             out_img = np.squeeze((in_img.copy() * 127.5 + 127.5) / 255.)

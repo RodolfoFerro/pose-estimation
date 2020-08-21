@@ -9,9 +9,11 @@ MODEL_PATH = 'models/' + MODEL_NAME
 
 VIEWER_SPECS = {
     'WINDOW_NAME': 'Pose Estimation',
+    'MIRROR_IMAGE': True,
     'POINT_COLOR': (66, 245, 156),
     'LINK_COLOR': (66, 185, 245),
-    'THICKNESS': 1
+    'THICKNESS': 1,
+    'THRESHOLD': 0.5
 }
 
 OUT_FILE = 'out.json'
