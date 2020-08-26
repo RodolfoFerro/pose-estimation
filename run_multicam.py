@@ -42,9 +42,9 @@ if __name__ == "__main__":
     pid = -1
     jobs = []
 
-    for i in range(len(viewers)):
+    for viewer in viewers:
         pid += 1
-        process = Process(target=process_viewer, args=(viewers[i], pid))
+        process = Process(target=process_viewer, args=(viewer, pid))
         jobs.append(process)
 
     for job in jobs:
