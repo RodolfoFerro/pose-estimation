@@ -13,7 +13,7 @@ VIEWER_SPECS = {
     'POINT_COLOR': (66, 245, 156),
     'LINK_COLOR': (66, 185, 245),
     'THICKNESS': 1,
-    'THRESHOLD': 0.5
+    'THRESHOLD': 0.2
 }
 
 OUT_FILE = 'out.json'
