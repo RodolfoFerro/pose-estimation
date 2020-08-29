@@ -215,6 +215,11 @@ class Viewer():
             out_img = np.array(out_img * 255, np.uint8)
             out_img = self._draw_kps(out_img, kps)
 
+            # TODO - Condition scaling
+            if True:
+                oh, ow = out_img.shape[:2]
+                out_img = cv2.resize(out_img, (ow * 8, oh * 8))
+
             # Writes output file
             if self.output_file:
                 self._serialize_output(kps)
