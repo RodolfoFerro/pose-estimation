@@ -17,7 +17,7 @@ VIEWER_SPECS = {
     'POINT_COLOR': (66, 245, 156),
     'LINK_COLOR': (66, 185, 245),
     'THICKNESS': 1,
-    'THRESHOLD': 0.5
+    'THRESHOLD': 0.85
 }
 
 OUT_FILE_A = 'out_A.json'
@@ -26,7 +26,7 @@ OUT_FILE_B = 'out_B.json'
 
 # Initialize videocapture
 CAPTURE_A = cv2.VideoCapture(0)
-CAPTURE_B = cv2.VideoCapture(0)
+CAPTURE_B = cv2.VideoCapture(1)
 
 # Creates model instance
 model_A = ModelLoader(MODEL_PATH)
