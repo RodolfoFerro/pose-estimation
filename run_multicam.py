@@ -35,7 +35,7 @@ def process_viewer(camera):
     }
 
     # Specify output file
-    OUT_FILE = 'C:\Users\Estandarte Digital\Documents\Registros'
+    OUT_FILE = "C:\Users\Estandarte Digital\Documents\Registros"
     OUT_FILE += f'\out_{mapper[camera]}.json'
 
     # Psutil Process (CPU affinity)
