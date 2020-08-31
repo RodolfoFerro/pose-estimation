@@ -1,50 +1,68 @@
 from multiprocessing import Process
 
-import cv2
-
 from utils.model_loader import ModelLoader
 from utils.viewer import Viewer
 
-from utils.multicam import process_viewer
+
+def process_viewer(camera):
+    """Processes a viewer instance as a subprocess.
+
+    Parameters
+    ----------
+    camera : int
+        An integer specifying the camera ID to be loaded.
+    """
+
+    import psutil
+    import cv2
+
+    from utils.model_loader import ModelLoader
+    from utils.viewer import Viewer
 
 
-MODEL_NAME = 'posenet_mobilenet_v1_100_257x257_multi_kpt_stripped.tflite'
-MODEL_PATH = 'models/' + MODEL_NAME
+    mapper = {
+        0: 'A',
+        1: 'B'
+    }
 
-VIEWER_SPECS = {
-    'WINDOW_NAME': 'Pose Estimation',
-    'MIRROR_IMAGE': True,
-    'POINT_COLOR': (66, 245, 156),
-    'LINK_COLOR': (66, 185, 245),
-    'THICKNESS': 1,
-    'THRESHOLD': 0.85
-}
+    MODEL_NAME = 'posenet_mobilenet_v1_100_257x257_multi_kpt_stripped.tflite'
+    MODEL_PATH = 'models/' + MODEL_NAME
 
-OUT_FILE_A = 'out_A.json'
-OUT_FILE_B = 'out_B.json'
+    VIEWER_SPECS = {
+        'WINDOW_NAME': 'Pose Estimation',
+        'MIRROR_IMAGE': True,
+        'POINT_COLOR': (66, 245, 156),
+        'LINK_COLOR': (66, 185, 245),
+        'THICKNESS': 1,
+        'THRESHOLD': 0.85
+    }
 
+    # Specify output file
+    OUT_FILE = f'out_{mapper[camera]}.json'
 
-# Initialize videocapture
-CAPTURE_A = cv2.VideoCapture(0)
-CAPTURE_B = cv2.VideoCapture(1)
+    # Psutil Process (CPU affinity)
+    p = psutil.Process()
+    p.cpu_affinity([camera + 1])
 
-# Creates model instance
-model_A = ModelLoader(MODEL_PATH)
-model_B = ModelLoader(MODEL_PATH)
+    # Initialize videocapture
+    CAPTURE = cv2.VideoCapture(camera)
 
-# Creates viewer instance and runs capture
-viewer_A = Viewer(model_A, CAPTURE_A, VIEWER_SPECS, OUT_FILE_A)
-viewer_B = Viewer(model_B, CAPTURE_B, VIEWER_SPECS, OUT_FILE_B)
-viewers = [viewer_A, viewer_B]
+    # Creates model instance
+    model = ModelLoader(MODEL_PATH)
+
+    # Creates viewer instance and runs capture
+    viewer = Viewer(model, CAPTURE, VIEWER_SPECS, OUT_FILE)
+    viewer.run()
 
 
 if __name__ == "__main__":
-    pid = -1
+    camera = -1
+    procs = 2
     jobs = []
 
-    for viewer in viewers:
-        pid += 1
-        process = Process(target=process_viewer, args=(viewer, pid))
+    for i in range(procs):
+        camera += 1
+        process = Process(target=process_viewer, args=([camera]))
         jobs.append(process)
 
     for job in jobs:
