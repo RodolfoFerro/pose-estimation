@@ -1,8 +1,5 @@
 from multiprocessing import Process
 
-from utils.model_loader import ModelLoader
-from utils.viewer import Viewer
-
 
 def process_viewer(camera):
     """Processes a viewer instance as a subprocess.
