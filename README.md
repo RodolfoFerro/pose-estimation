@@ -40,7 +40,7 @@ To install the dependencies, you can simply follow this steps.
 
 Clone the project repository:
 ```bash
-git clone https://github.com/Estandarte-Digital/pose-estimation.git
+git clone https://github.com/RodolfoFerro/pose-estimation.git
 cd pose-estimation
 ```
 
@@ -61,7 +61,7 @@ $ conda activate pose-estimation
 **Using `virtualenv`**
 
 ```bash
-# In this case I'm supposing that your latest python3 version is +3.6
+# In this case I'm supposing that your latest python3 version is 3.6+
 $ virtualenv pose-estimation --python=python3
 
 # Activate the virtual environment:
