@@ -43,6 +43,8 @@ class Viewer():
             if 'THICKNESS' in specs else 1
         self.threshold = viewer_specs['THRESHOLD'] \
             if 'THRESHOLD' in specs else 0.7
+        self.scale = viewer_specs['SCALE'] \
+            if 'SCALE' in specs else 1
         
         self.output_file = output_file
 
@@ -180,7 +182,9 @@ class Viewer():
             if self.mirror:
                 frame = cv2.flip(frame, 1)
 
-            in_img = cv2.resize(frame[:, delta:-delta], (width, height))
+            in_img = frame[:, delta:-delta]
+            cut_img = in_img.copy()
+            in_img = cv2.resize(in_img, (width, height))
             in_img = np.expand_dims(in_img, axis=0)
 
             float_model = self.input_details[0]['dtype'] == np.float32
@@ -215,10 +219,12 @@ class Viewer():
             out_img = np.array(out_img * 255, np.uint8)
             out_img = self._draw_kps(out_img, kps)
 
-            # TODO - Condition scaling
-            if True:
-                oh, ow = out_img.shape[:2]
-                out_img = cv2.resize(out_img, (ow * 8, oh * 8))
+            # Scale output
+            h, w, _ = cut_img.shape
+            # new_out = self._draw_kps(cut_img, kps * self.scale)
+            oh, ow = out_img.shape[:2]
+            scale_size = (int(ow * self.scale), int(oh * self.scale))
+            out_img = cv2.resize(out_img, scale_size)
 
             # Writes output file
             if self.output_file:
@@ -231,6 +237,7 @@ class Viewer():
 
             # Display the resulting frame
             cv2.imshow(self.window, out_img)
+            # cv2.imshow(self.window, new_out)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
