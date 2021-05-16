@@ -34,7 +34,9 @@ class Viewer():
         self.window = viewer_specs['WINDOW_NAME'] \
             if 'WINDOW_NAME' in specs else 'CAPTURE'
         self.mirror = viewer_specs['MIRROR_IMAGE'] \
-            if 'MIRROR_IMAGE' in specs else False,
+            if 'MIRROR_IMAGE' in specs else False
+        self.links = viewer_specs['DRAW_LINKS'] \
+            if 'DRAW_LINKS' in specs else False
         self.point_color = viewer_specs['POINT_COLOR'] \
             if 'POINT_COLOR' in specs else (255, 0, 0)
         self.link_color = viewer_specs['LINK_COLOR'] \
