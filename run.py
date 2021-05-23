@@ -1,4 +1,6 @@
 import cv2
+from tensorflow.python.compiler.mlcompute import mlcompute
+mlcompute.set_mlc_device(device_name='gpu')
 
 from utils.model_loader import ModelLoader
 from utils.viewer import Viewer
@@ -10,6 +12,7 @@ MODEL_PATH = 'models/' + MODEL_NAME
 VIEWER_SPECS = {
     'WINDOW_NAME': 'Pose Estimation',
     'MIRROR_IMAGE': True,
+    'DRAW_LINKS': True,
     'POINT_COLOR': (156, 245, 66),
     'LINK_COLOR': (255, 0, 76),
     'THICKNESS': 1,

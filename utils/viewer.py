@@ -122,6 +122,58 @@ class Viewer():
 
         with open(self.output_file, 'w') as f:
             f.write(output)
+    
+
+    def _draw_links(self, show_img, kps, ratio=None):
+        """Draws a link from position A to position B.
+        
+        Parameters
+        ----------
+        show_img : ndarray
+            The image where the keypoints will be plotted.
+        kps : ndarray
+            The tensor containing the keypoints to be plotted.
+        ratio : float
+            A ratio to scale the plotting points in output image.
+
+        Returns
+        -------
+        show_img : ndarray
+            The output image to be shown, containing the plotted link.
+        """
+        
+        valid_links = [
+            (5, 6), (5, 7), (6, 8), (7, 9), (8, 10), (5, 11), (6, 12),
+            (11, 12), (11, 13), (12, 14), (13, 15), (14, 16)
+        ]
+
+        for link in valid_links:
+            i, j = link
+            if kps[i, 2] and kps[j, 2]:
+                if isinstance(ratio, tuple):
+                    a_X = int(round(kps[i, 1] * ratio[1]))
+                    a_Y = int(round(kps[i, 0] * ratio[0]))
+                    b_X = int(round(kps[j, 1] * ratio[1]))
+                    b_Y = int(round(kps[j, 0] * ratio[0]))
+
+                    cv2.line(
+                        show_img,
+                        (a_X, a_Y),
+                        (b_X, b_Y),
+                        self.link_color,
+                        self.thickness
+                    )
+                    continue
+
+                cv2.line(
+                    show_img,
+                    (kps[i, 1], kps[i, 0]),
+                    (kps[j, 1], kps[j, 0]),
+                    self.link_color,
+                    self.thickness
+                )
+        
+        return show_img
 
 
     def _draw_kps(self, show_img, kps, ratio=None):
@@ -142,11 +194,18 @@ class Viewer():
             The output image to be shown, containing the plotted keypoints.
         """
 
+        if self.links:
+            show_img = self._draw_links(
+                show_img, 
+                kps
+            )
+
         for i in range(kps.shape[0]):
             if kps[i, 2]:
                 if isinstance(ratio, tuple):
                     p_X = int(round(kps[i, 1] * ratio[1]))
                     p_Y = int(round(kps[i, 0] * ratio[0]))
+
                     cv2.circle(
                         show_img,
                         (p_X, p_Y),
@@ -155,6 +214,7 @@ class Viewer():
                         round(int(1 * ratio[1]))
                     )
                     continue
+
                 cv2.circle(
                     show_img,
                     (kps[i, 1], kps[i, 0]),
@@ -162,6 +222,7 @@ class Viewer():
                     self.point_color,
                     self.thickness
                 )
+
         return show_img
 
 
