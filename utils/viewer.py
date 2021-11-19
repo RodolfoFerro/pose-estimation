@@ -7,7 +7,8 @@ import cv2
 
 class Viewer():
 
-    def __init__(self, model, video_capture, viewer_specs, output_file=None):
+    def __init__(self, model, video_capture, viewer_specs, output_file=None,
+        socket=False):
         """Loads model, video capture and viewer.
 
         Sets interpreter and viewer specifications.
@@ -28,6 +29,7 @@ class Viewer():
         self.input_details = model.model_dict['input_details']
         self.output_details = model.model_dict['output_details']
         self.capture = video_capture
+        self.socket = socket
 
         specs = viewer_specs.keys()
 
@@ -47,6 +49,8 @@ class Viewer():
             if 'THRESHOLD' in specs else 0.7
         self.scale = viewer_specs['SCALE'] \
             if 'SCALE' in specs else 1
+        self.squared = viewer_specs['SQUARED'] \
+            if 'SQUARED' in specs else False
         
         self.output_file = output_file
 
@@ -122,6 +126,33 @@ class Viewer():
 
         with open(self.output_file, 'w') as f:
             f.write(output)
+
+
+    def _serialize_to_socket(self, kps, connection):
+        """Serializes output to socket.
+
+        Writes output keypoints into a JSON file.
+        """
+
+        parts = [
+            'NOSE', 'L_EYE', 'R_EYE', 'L_EAR', 'R_EAR', 'L_SHOULDER',
+            'R_SHOULDER', 'L_ELBOW', 'R_ELBOW', 'L_WRIST', 'R_WRIST',
+            'L_HIP', 'R_HIP', 'L_KNEE', 'R_KNEE', 'L_ANKLE', 'R_ANKLE'
+        ]
+        json_msg = ''
+
+        for i in range(kps.shape[0]):
+            if kps[i, 2]:
+                part = {
+                    'ID': i,
+                    'part': parts[i],
+                    'x': int(kps[i, 1]),
+                    'y': int(kps[i, 0])
+                }
+                json_msg += json.dumps(part) + ';'
+        
+        json_msg = json_msg[:-1]
+        connection.send(bytes(json_msg, 'utf-8'))
     
 
     def _draw_links(self, show_img, kps, ratio=None):
@@ -226,7 +257,7 @@ class Viewer():
         return show_img
 
 
-    def run(self):
+    def run(self, connection=None):
         """Runs viewer.
 
         Function to invoke interpreter, run inference and plot results.
@@ -246,7 +277,7 @@ class Viewer():
                 frame = cv2.flip(frame, 1)
 
             in_img = frame[:, delta:-delta]
-            cut_img = in_img.copy()
+
             in_img = cv2.resize(in_img, (width, height))
             in_img = np.expand_dims(in_img, axis=0)
 
@@ -283,8 +314,6 @@ class Viewer():
             out_img = self._draw_kps(out_img, kps)
 
             # Scale output
-            h, w, _ = cut_img.shape
-            # new_out = self._draw_kps(cut_img, kps * self.scale)
             oh, ow = out_img.shape[:2]
             scale_size = (int(ow * self.scale), int(oh * self.scale))
             out_img = cv2.resize(out_img, scale_size)
@@ -292,6 +321,9 @@ class Viewer():
             # Writes output file
             if self.output_file:
                 self._serialize_output(kps)
+
+            if self.socket and connection:
+                self._serialize_to_socket(kps, connection)
 
             # End time count
             end_prediction = time()

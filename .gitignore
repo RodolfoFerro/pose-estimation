@@ -1,6 +1,8 @@
 # Extra
+.vscode
 utils/__pycache__/
 out*.json
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
