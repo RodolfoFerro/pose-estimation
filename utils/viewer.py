@@ -8,7 +8,7 @@ import cv2
 class Viewer():
 
     def __init__(self, model, video_capture, viewer_specs, output_file=None,
-        socket=False):
+        socket_conn=False):
         """Loads model, video capture and viewer.
 
         Sets interpreter and viewer specifications.
@@ -29,7 +29,7 @@ class Viewer():
         self.input_details = model.model_dict['input_details']
         self.output_details = model.model_dict['output_details']
         self.capture = video_capture
-        self.socket = socket
+        self.socket_conn = socket_conn
 
         specs = viewer_specs.keys()
 
@@ -320,10 +320,10 @@ class Viewer():
             out_img = cv2.resize(out_img, scale_size)
 
             # Writes output file
-            if self.output_file:
+            if self.output_file != None:
                 self._serialize_output(kps)
 
-            if self.socket and connection:
+            if self.socket_conn and connection:
                 self._serialize_to_socket(kps, connection)
 
             # End time count
