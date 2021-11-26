@@ -124,8 +124,8 @@ class Viewer():
         
         output = json.dumps(json_output, indent=4)
 
-        with open(self.output_file, 'w') as f:
-            f.write(output)
+        # with open(self.output_file, 'w') as f:
+        #     f.write(output)
 
 
     def _serialize_to_socket(self, kps, connection):
@@ -153,7 +153,7 @@ class Viewer():
         
         json_msg = json_msg[:-1]
         print(json_msg)
-        connection.send(bytes(json_msg, 'utf-8'))
+        connection.send(json_msg.enconde())
     
 
     def _draw_links(self, show_img, kps, ratio=None):
@@ -329,7 +329,7 @@ class Viewer():
             # End time count
             end_prediction = time()
             delta_prediction = end_prediction - start_prediction
-            print(" * Time for prediction: {}".format(delta_prediction))
+            # print(" * Time for prediction: {}".format(delta_prediction))
 
             # Display the resulting frame
             cv2.imshow(self.window, out_img)
