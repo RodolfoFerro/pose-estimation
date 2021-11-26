@@ -152,6 +152,7 @@ class Viewer():
                 json_msg += json.dumps(part) + ';'
         
         json_msg = json_msg[:-1]
+        print(json_msg)
         connection.send(bytes(json_msg, 'utf-8'))
     
 
