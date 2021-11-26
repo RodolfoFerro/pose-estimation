@@ -1,4 +1,5 @@
 from time import time
+import socket
 import json
 
 import numpy as np
@@ -7,8 +8,7 @@ import cv2
 
 class Viewer():
 
-    def __init__(self, model, video_capture, viewer_specs, output_file=None,
-        socket_conn=False):
+    def __init__(self, model, video_capture, viewer_specs, host, port):
         """Loads model, video capture and viewer.
 
         Sets interpreter and viewer specifications.
@@ -29,7 +29,8 @@ class Viewer():
         self.input_details = model.model_dict['input_details']
         self.output_details = model.model_dict['output_details']
         self.capture = video_capture
-        self.socket_conn = socket_conn
+        self.host = host
+        self.port = port
 
         specs = viewer_specs.keys()
 
@@ -51,8 +52,6 @@ class Viewer():
             if 'SCALE' in specs else 1
         self.squared = viewer_specs['SQUARED'] \
             if 'SQUARED' in specs else False
-        
-        self.output_file = output_file
 
 
     def _parse_output(self, heatmap_data, offset_data):
@@ -100,32 +99,32 @@ class Viewer():
         return pose_kps
 
 
-    def _serialize_output(self, kps):
-        """Serializes output.
+    # def _serialize_output(self, kps):
+    #     """Serializes output.
 
-        Writes output keypoints into a JSON file.
-        """
+    #     Writes output keypoints into a JSON file.
+    #     """
 
-        json_output = []
-        parts = [
-            'NOSE', 'L_EYE', 'R_EYE', 'L_EAR', 'R_EAR', 'L_SHOULDER',
-            'R_SHOULDER', 'L_ELBOW', 'R_ELBOW', 'L_WRIST', 'R_WRIST',
-            'L_HIP', 'R_HIP', 'L_KNEE', 'R_KNEE', 'L_ANKLE', 'R_ANKLE'
-        ]
-        for i in range(kps.shape[0]):
-            if kps[i, 2]:
-                part = {
-                    'ID': i,
-                    'part': parts[i],
-                    'x': int(kps[i, 1]),
-                    'y': int(kps[i, 0])
-                }
-                json_output.append(part)
+    #     json_output = []
+    #     parts = [
+    #         'NOSE', 'L_EYE', 'R_EYE', 'L_EAR', 'R_EAR', 'L_SHOULDER',
+    #         'R_SHOULDER', 'L_ELBOW', 'R_ELBOW', 'L_WRIST', 'R_WRIST',
+    #         'L_HIP', 'R_HIP', 'L_KNEE', 'R_KNEE', 'L_ANKLE', 'R_ANKLE'
+    #     ]
+    #     for i in range(kps.shape[0]):
+    #         if kps[i, 2]:
+    #             part = {
+    #                 'ID': i,
+    #                 'part': parts[i],
+    #                 'x': int(kps[i, 1]),
+    #                 'y': int(kps[i, 0])
+    #             }
+    #             json_output.append(part)
         
-        output = json.dumps(json_output, indent=4)
+    #     output = json.dumps(json_output, indent=4)
 
-        with open(self.output_file, 'w') as f:
-            f.write(output)
+    #     with open(self.output_file, 'w') as f:
+    #         f.write(output)
 
 
     def _serialize_to_socket(self, kps, connection):
@@ -153,7 +152,7 @@ class Viewer():
         
         json_msg = json_msg[:-1]
         print(json_msg)
-        connection.send(json_msg.enconde())
+        connection.send(bytes(json_msg, 'utf-8'))
     
 
     def _draw_links(self, show_img, kps, ratio=None):
@@ -258,11 +257,22 @@ class Viewer():
         return show_img
 
 
-    def run(self, connection=None):
+    def run(self):
         """Runs viewer.
 
         Function to invoke interpreter, run inference and plot results.
         """
+
+        # Connect to socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind((self.host, self.port))
+        s.listen(5)
+
+        # Start connection
+        print('[INFO] Starting conection')
+        conn, addr = s.accept()
+        print('[INFO] Connection established with: ', addr)
+
         while True:
             # Capture frame-by-frame:
             ret, frame = self.capture.read()
@@ -323,12 +333,12 @@ class Viewer():
             # if self.output_file != None:
             #     self._serialize_output(kps)
 
-            if self.socket_conn and connection:
-                self._serialize_to_socket(kps, connection)
+            # if self.socket_conn and connection:
+            self._serialize_to_socket(kps, conn)
 
             # End time count
-            end_prediction = time()
-            delta_prediction = end_prediction - start_prediction
+            # end_prediction = time()
+            # delta_prediction = end_prediction - start_prediction
             # print(" * Time for prediction: {}".format(delta_prediction))
 
             # Display the resulting frame
@@ -340,3 +350,4 @@ class Viewer():
         # When everything done, release the capture
         self.capture.release()
         cv2.destroyAllWindows()
+        conn.close()

@@ -19,26 +19,15 @@ VIEWER_SPECS = {
     'SCALE': 2
 }
 
-SOCKET = True
-
 # Initialize videocapture
 CAPTURE = cv2.VideoCapture(0)
 
 # Creates model instance
 model = ModelLoader(MODEL_PATH)
 
-if SOCKET:
-    host = '127.0.0.1'
-    port = 25001
-    CONNECTION = create_socket_connection(host, port)
+host = '127.0.0.1'
+port = 25001
 
-    # Creates viewer instance and runs capture
-    viewer = Viewer(model, CAPTURE, VIEWER_SPECS, SOCKET)
-    viewer.run(CONNECTION)
-    CONNECTION.close()
-else:
-    OUT_FILE = 'out.json'
-
-    # Creates viewer instance and runs capture
-    viewer = Viewer(model, CAPTURE, VIEWER_SPECS, OUT_FILE, SOCKET)
-    viewer.run()
+# Creates viewer instance and runs capture
+viewer = Viewer(model, CAPTURE, VIEWER_SPECS, host, port)
+viewer.run()
