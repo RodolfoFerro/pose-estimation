@@ -124,8 +124,8 @@ class Viewer():
         
         output = json.dumps(json_output, indent=4)
 
-        # with open(self.output_file, 'w') as f:
-        #     f.write(output)
+        with open(self.output_file, 'w') as f:
+            f.write(output)
 
 
     def _serialize_to_socket(self, kps, connection):
@@ -320,8 +320,8 @@ class Viewer():
             out_img = cv2.resize(out_img, scale_size)
 
             # Writes output file
-            if self.output_file != None:
-                self._serialize_output(kps)
+            # if self.output_file != None:
+            #     self._serialize_output(kps)
 
             if self.socket_conn and connection:
                 self._serialize_to_socket(kps, connection)
