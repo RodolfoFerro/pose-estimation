@@ -2,7 +2,6 @@ import cv2
 
 from utils.model_loader import ModelLoader
 from utils.viewer import Viewer
-from utils.socket_connection import create_socket_connection
 
 
 MODEL_NAME = 'posenet_mobilenet_v1_100_257x257_multi_kpt_stripped.tflite'

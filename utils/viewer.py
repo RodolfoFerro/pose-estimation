@@ -53,6 +53,18 @@ class Viewer():
         self.squared = viewer_specs['SQUARED'] \
             if 'SQUARED' in specs else False
 
+        # Connect to socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind((self.host, self.port))
+        s.listen(5)
+
+        # Start connection
+        print('[INFO] Starting conection')
+        conn, addr = s.accept()
+        print('[INFO] Connection established with: ', addr)
+
+        self.connection = conn
+
 
     def _parse_output(self, heatmap_data, offset_data):
         '''Parses output from inference.
@@ -151,7 +163,6 @@ class Viewer():
                 json_msg += json.dumps(part) + ';'
         
         json_msg = json_msg[:-1]
-        print(json_msg)
         connection.send(bytes(json_msg, 'utf-8'))
     
 
@@ -263,16 +274,6 @@ class Viewer():
         Function to invoke interpreter, run inference and plot results.
         """
 
-        # Connect to socket
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((self.host, self.port))
-        s.listen(5)
-
-        # Start connection
-        print('[INFO] Starting conection')
-        conn, addr = s.accept()
-        print('[INFO] Connection established with: ', addr)
-
         while True:
             # Capture frame-by-frame:
             ret, frame = self.capture.read()
@@ -334,7 +335,7 @@ class Viewer():
             #     self._serialize_output(kps)
 
             # if self.socket_conn and connection:
-            self._serialize_to_socket(kps, conn)
+            self._serialize_to_socket(kps, self.connection)
 
             # End time count
             # end_prediction = time()
@@ -350,4 +351,4 @@ class Viewer():
         # When everything done, release the capture
         self.capture.release()
         cv2.destroyAllWindows()
-        conn.close()
+        self.connection.close()
